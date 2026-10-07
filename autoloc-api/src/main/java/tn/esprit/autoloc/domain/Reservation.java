@@ -26,4 +26,16 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private StatutReservation statut;
+
+    @ManyToOne
+    private Vehicule vehicule;
+
+    @ManyToOne
+    private Client client;
+
+    @OneToOne
+    @JoinColumn(name = "id_contrat")
+    private Contrat contrat;
+    //@JoinColumn(name = "id_contrat") sets the name of the foreign key column in reservation.
+    // Without it, Hibernate would name it contrat_id_contrat.
 }
