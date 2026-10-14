@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import tn.esprit.autoloc.domain.*;
 
@@ -14,6 +15,7 @@ import tn.esprit.autoloc.repository.IAgenceRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import tn.esprit.autoloc.service.IAgenceService;
 
 import java.util.List;
 
@@ -156,6 +158,22 @@ public class AgenceTest {
         }
         Assertions.fail(sb.toString());
     }
+
+    @Autowired
+    private IAgenceService agenceService;
+
+    @Test
+    public void createAgence() {
+        Agence agence = new Agence();
+        agence.setNom("Agence test");
+        agence.setTelephone("71000000");
+        agence.setVille("Tunis");
+        agence.setAdresse("1 Rue Test"); 
+
+        Agence saved = agenceService.create(agence);
+        Assertions.assertNotNull(saved.getIdAgence());
+    }
 }
 
+@Repository
 interface AgenceRepositoryMock extends CrudRepository<Agence, Long> {}
