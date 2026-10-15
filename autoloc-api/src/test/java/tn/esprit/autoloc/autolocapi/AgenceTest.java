@@ -166,9 +166,9 @@ public class AgenceTest {
     public void createAgence() {
         Agence agence = new Agence();
         agence.setNom("Agence test");
-        agence.setTelephone("71000000");
+        agence.setTelephone("71000002");
         agence.setVille("Tunis");
-        agence.setAdresse("1 Rue Test"); 
+        agence.setAdresse("1 Rue Test");
 
         Agence saved = agenceService.create(agence);
         Assertions.assertNotNull(saved.getIdAgence());
