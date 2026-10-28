@@ -27,9 +27,9 @@ public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long> implemen
     @Override
     protected void setFields(Agence source, Agence target) {
         target.setNom(source.getNom());
+        target.setVille(source.getVille());
         target.setAdresse(source.getAdresse());
         target.setTelephone(source.getTelephone());
-        target.setVehicules(source.getVehicules());
     }
 
     @Override

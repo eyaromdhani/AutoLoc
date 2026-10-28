@@ -1,5 +1,6 @@
 package tn.esprit.autoloc.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,15 +40,19 @@ public class Vehicule {
     @Column(nullable = false, length = 20)
     private StatutVehicule statut;
 
+    //ajouté
     @ManyToOne
+    @JsonIgnore
     private Agence agence;
 
     @OneToMany(mappedBy = "vehicule", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private Set<Reservation> reservations = new HashSet<>();
     //mappedBy = "vehicule" is the name of the attribute you just wrote in Reservation (A1).
     // It tells Hibernate that Reservation owns the foreign key, so don't create another one.
 
     @ManyToMany
+    @JsonIgnore
     @JoinTable(name = "vehicule_equipement",
             joinColumns = @JoinColumn(name = "id_vehicule"),
             inverseJoinColumns = @JoinColumn(name = "id_equipement"))

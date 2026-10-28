@@ -1,7 +1,10 @@
 package tn.esprit.autoloc.service;
 
+
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.exception.ResourceNotFoundException;
+
 import java.util.List;
 
 public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID> {
@@ -37,8 +40,8 @@ public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID
     @Override
     public T findById(ID id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        getEntityName() + " introuvable avec l'id : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        getEntityName(), String.valueOf(id)));
     }
 
     @Override
@@ -59,8 +62,8 @@ public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID
     @Override
     public void deleteById(ID id) {
         if (!repository.existsById(id)) {
-            throw new EntityNotFoundException(
-                    getEntityName() + " introuvable avec l'id : " + id);
+            throw new ResourceNotFoundException(
+                    getEntityName(), String.valueOf(id));
         }
         repository.deleteById(id);
     }
