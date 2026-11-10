@@ -2,15 +2,27 @@ package tn.esprit.autoloc.service;
 
 import org.springframework.stereotype.Service;
 import tn.esprit.autoloc.Utils;
+import tn.esprit.autoloc.calcul.IOffreStrategy;
+import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.repository.IVehiculeRepository;
+
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> implements IVehiculeService {
 
-    public VehiculeServiceImpl(IVehiculeRepository repository) {
+
+    private final Map<VehiculeOffre, IOffreStrategy> strategies = new EnumMap<>(VehiculeOffre.class);
+    public VehiculeServiceImpl(IVehiculeRepository repository, List<IOffreStrategy> offreStrategies) {
         super(repository);
+        for (IOffreStrategy strategy : offreStrategies) {
+            strategies.put(strategy.getOffre(), strategy);
+        }
     }
+
 
     @Override
     protected String getEntityName() {
@@ -43,5 +55,14 @@ public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> impl
                 && v.getCategorie() != null
                 && v.getTarifJournalier() != null
                 && v.getStatut() != null;
+    }
+
+    @Override
+    public double calculTarif(Vehicule v, int nbjours, VehiculeOffre offre) {
+        IOffreStrategy strategy = strategies.get(offre);
+        if (strategy == null) {
+            throw new IllegalArgumentException("Offre non supportée : " + offre);
+        }
+        return strategy.calculer(v.getTarifJournalier().doubleValue(), nbjours);
     }
 }

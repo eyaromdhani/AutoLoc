@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.service.IAgenceService;
+import tn.esprit.autoloc.service.ISimulationAgenceService;
 
 import java.util.List;
 
@@ -19,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AgenceController {
 
+
+    private final ISimulationAgenceService simulationService;
     private final IAgenceService agenceService;
 
     @Operation(summary = "Lister les agences",
@@ -81,5 +85,23 @@ public class AgenceController {
             @Parameter(description = "Identifiant de l'agence", example = "2")
             @PathVariable Long id) {
         agenceService.deleteById(id);
+    }
+
+    @Operation(summary = "Simuler les tarifs d'une agence",
+            description = "Retourne un rapport texte avec l'en-tête de l'agence et le total des tarifs de ses véhicules")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Simulation retournée"),
+            @ApiResponse(responseCode = "404", description = "Agence introuvable")
+    })
+    @GetMapping("/{id}/simuler")
+    public String simuler(
+            @Parameter(description = "Identifiant de l'agence", example = "2")
+            @PathVariable Long id,
+            @Parameter(description = "Nombre de jours", example = "5")
+            @RequestParam int nbJours,
+            @Parameter(description = "Offre : STANDARD, WEEKEND ou LONGUE_DUREE", example = "STANDARD")
+            @RequestParam VehiculeOffre offre) {
+        Agence agence = agenceService.findById(id);
+        return simulationService.simuler(agence, nbJours, offre);
     }
 }

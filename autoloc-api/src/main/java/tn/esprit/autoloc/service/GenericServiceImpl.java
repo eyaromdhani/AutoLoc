@@ -68,7 +68,7 @@ public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID
         repository.deleteById(id);
     }
 
-    @Override
+    //@Override
     public boolean hasVehicules(ID id) {
         return false; // redefini dans les services concernes (ex: Agence)
     }
