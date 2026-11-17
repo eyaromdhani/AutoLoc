@@ -1,21 +1,22 @@
 package tn.esprit.autoloc.service;
 
-
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.autoloc.Utils;
-import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Agence;
-
-import tn.esprit.autoloc.exception.ResourceNotFoundException;
+import tn.esprit.autoloc.domain.Employe;
 import tn.esprit.autoloc.repository.IAgenceRepository;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BasicAgenceServiceImpl implements IAgenceService  {
+public class BasicAgenceServiceImpl implements IAgenceService {
+
+    private static final String AGENCE_INTROUVABLE = "Agence introuvable avec l'id : ";
+
     private final IAgenceRepository agenceRepository;
 
     @Override
@@ -26,11 +27,9 @@ public class BasicAgenceServiceImpl implements IAgenceService  {
 
     @Override
     public Agence create(Agence agence) {
-        if(agence.getIdAgence() !=  null)
-        {
+        if (agence.getIdAgence() != null) {
             throw new IllegalArgumentException("L'agence ne doit pas avoir d'identifiant lors de la création.");
         }
-
         if (!check(agence, true)) {
             throw new IllegalArgumentException("L'agence n'est pas valide.");
         }
@@ -39,14 +38,13 @@ public class BasicAgenceServiceImpl implements IAgenceService  {
 
     @Override
     public Agence findById(Long id) {
-        //return agenceRepository.findById(id).orElseThrow(() ->new ResourceNotFoundException("Agence", id.toString()));
         return agenceRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Agence introuvable avec l'id : " + id));
+                .orElseThrow(() -> new EntityNotFoundException(AGENCE_INTROUVABLE + id));
     }
 
     @Override
     public List<Agence> findAll() {
-        return List.of();
+        return agenceRepository.findAll();
     }
 
     @Override
@@ -68,19 +66,19 @@ public class BasicAgenceServiceImpl implements IAgenceService  {
     @Override
     public void deleteById(Long id) {
         if (!agenceRepository.existsById(id)) {
-            throw new EntityNotFoundException("Agence introuvable avec l'id : " + id);
+            throw new EntityNotFoundException(AGENCE_INTROUVABLE + id);
         }
         agenceRepository.deleteById(id);
     }
 
-    //@Override
+    @Transactional(readOnly = true)
     public boolean hasVehicules(Long id) {
-        return false;
+        return !findById(id).getVehicules().isEmpty();
     }
 
-
-    //public String simuler(Agence agence, int nbjours, VehiculeOffre offre) {
-     //   throw new UnsupportedOperationException(
-      //          "La simulation n'est pas supportée par l'implémentation basique");
-    //}
+    @Override
+    public void updateAgenceAvecEmployes(Agence agence, List<Employe> employes) {
+        throw new UnsupportedOperationException(
+                "Cette opération n'est pas supportée par le service basique");
+    }
 }

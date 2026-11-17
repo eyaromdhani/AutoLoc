@@ -1,23 +1,21 @@
 package tn.esprit.autoloc.service;
 
-
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
 
 import java.util.List;
 
-public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID> {
+public abstract class GenericServiceImpl<T, I> implements IGenericService<T, I> {
 
-    protected final JpaRepository<T, ID> repository;
+    protected final JpaRepository<T, I> repository;
 
-    protected GenericServiceImpl(JpaRepository<T, ID> repository) {
+    protected GenericServiceImpl(JpaRepository<T, I> repository) {
         this.repository = repository;
     }
 
-    // Methodes abstraites demandees par la consigne
+    // Méthodes abstraites demandées par la consigne
     protected abstract String getEntityName();
-    protected abstract ID getId(T entity);
+    protected abstract I getId(T entity);
     protected abstract void setFields(T source, T target);
 
     @Override
@@ -38,7 +36,7 @@ public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID
     }
 
     @Override
-    public T findById(ID id) {
+    public T findById(I id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         getEntityName(), String.valueOf(id)));
@@ -50,7 +48,7 @@ public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID
     }
 
     @Override
-    public T update(ID id, T entity) {
+    public T update(I id, T entity) {
         T existing = findById(id);
         if (!check(entity, false)) {
             throw new IllegalArgumentException("Les données de " + getEntityName() + " sont invalides");
@@ -60,7 +58,7 @@ public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID
     }
 
     @Override
-    public void deleteById(ID id) {
+    public void deleteById(I id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException(
                     getEntityName(), String.valueOf(id));
@@ -68,8 +66,9 @@ public abstract class GenericServiceImpl<T, ID> implements IGenericService<T, ID
         repository.deleteById(id);
     }
 
-    //@Override
-    public boolean hasVehicules(ID id) {
-        return false; // redefini dans les services concernes (ex: Agence)
+    // Redéfini dans les services concernés (ex: Agence)
+    @SuppressWarnings("unused")
+    public boolean hasVehicules(I id) {
+        return false;
     }
 }

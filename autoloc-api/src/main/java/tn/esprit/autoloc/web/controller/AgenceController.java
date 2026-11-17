@@ -3,15 +3,16 @@ package tn.esprit.autoloc.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Agence;
+import tn.esprit.autoloc.domain.Employe;
 import tn.esprit.autoloc.service.IAgenceService;
 import tn.esprit.autoloc.service.ISimulationAgenceService;
+
 
 import java.util.List;
 
@@ -35,10 +36,10 @@ public class AgenceController {
 
     @Operation(summary = "Consulter une agence",
             description = "Retourne l'agence correspondant à l'identifiant")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Agence trouvée"),
+
+            @ApiResponse(responseCode = "200", description = "Agence trouvée")
             @ApiResponse(responseCode = "404", description = "Agence introuvable")
-    })
+
     @GetMapping("/{id}")
     public Agence findById(
             @Parameter(description = "Identifiant de l'agence", example = "2")
@@ -48,10 +49,10 @@ public class AgenceController {
 
     @Operation(summary = "Créer une agence",
             description = "Crée une agence. Le corps ne doit pas contenir d'identifiant.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Agence créée"),
+
+            @ApiResponse(responseCode = "201", description = "Agence créée")
             @ApiResponse(responseCode = "400", description = "Données invalides ou identifiant fourni")
-    })
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Agence create(@RequestBody Agence agence) {
@@ -60,11 +61,11 @@ public class AgenceController {
 
     @Operation(summary = "Modifier une agence",
             description = "Met à jour les informations d'une agence existante")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Agence modifiée"),
-            @ApiResponse(responseCode = "400", description = "Données invalides"),
+
+            @ApiResponse(responseCode = "200", description = "Agence modifiée")
+            @ApiResponse(responseCode = "400", description = "Données invalides")
             @ApiResponse(responseCode = "404", description = "Agence introuvable")
-    })
+
     @PutMapping("/{id}")
     public Agence update(
             @Parameter(description = "Identifiant de l'agence", example = "2")
@@ -72,13 +73,25 @@ public class AgenceController {
             @RequestBody Agence agence) {
         return agenceService.update(id, agence);
     }
+    @PutMapping("/{id}/employes")
+    public void updateAgenceAvecEmployes(
+            @PathVariable Long id,
+            @RequestBody Agence agence) {
+
+        agence.setIdAgence(id);
+
+        agenceService.updateAgenceAvecEmployes(
+                agence,
+                (List<Employe>) agence.getEmployes()
+        );
+    }
 
     @Operation(summary = "Supprimer une agence",
             description = "Supprime l'agence correspondant à l'identifiant")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Agence supprimée"),
+
+            @ApiResponse(responseCode = "204", description = "Agence supprimée")
             @ApiResponse(responseCode = "404", description = "Agence introuvable")
-    })
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(
@@ -89,10 +102,10 @@ public class AgenceController {
 
     @Operation(summary = "Simuler les tarifs d'une agence",
             description = "Retourne un rapport texte avec l'en-tête de l'agence et le total des tarifs de ses véhicules")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Simulation retournée"),
+
+            @ApiResponse(responseCode = "200", description = "Simulation retournée")
             @ApiResponse(responseCode = "404", description = "Agence introuvable")
-    })
+
     @GetMapping("/{id}/simuler")
     public String simuler(
             @Parameter(description = "Identifiant de l'agence", example = "2")

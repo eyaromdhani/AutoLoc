@@ -1,24 +1,37 @@
+
 package tn.esprit.autoloc.service;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import tn.esprit.autoloc.Utils;
 import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Agence;
 import tn.esprit.autoloc.domain.Vehicule;
-import tn.esprit.autoloc.io.RapportConsole;
+import tn.esprit.autoloc.domain.Employe;
 import tn.esprit.autoloc.repository.IAgenceRepository;
-import tn.esprit.autoloc.io.RapportConsoleImpl;
+import tn.esprit.autoloc.io.RapportConsole;
+
+import java.util.List;
 
 @RapportConsole
 @Primary
 @Service
-public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long> implements IAgenceService,ISimulationAgenceService {
+public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long>
+        implements IAgenceService, ISimulationAgenceService {
 
     private final IVehiculeService vehiculeService;
-    public AgenceServiceImpl(IAgenceRepository agenceRepository, IVehiculeService vehiculeService) {
+    private final IEmployeService employeService;
+
+    public AgenceServiceImpl(
+            IAgenceRepository agenceRepository,
+            IVehiculeService vehiculeService,
+            IEmployeService employeService) {
+
         super(agenceRepository);
         this.vehiculeService = vehiculeService;
+        this.employeService = employeService;
     }
 
     @Override
@@ -41,7 +54,8 @@ public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long> implemen
 
     @Override
     public boolean check(Agence agence, boolean isNew) {
-        return Utils.isNotEmpty(agence.getNom()) && Utils.isNotEmpty(agence.getTelephone());
+        return Utils.isNotEmpty(agence.getNom())
+                && Utils.isNotEmpty(agence.getTelephone());
     }
 
     @Override
@@ -49,12 +63,29 @@ public class AgenceServiceImpl extends GenericServiceImpl<Agence, Long> implemen
         return !findById(id).getVehicules().isEmpty();
     }
 
+    @Override
+    @Transactional
+    public void updateAgenceAvecEmployes(Agence agence, List<Employe> employes) {
+
+        update(agence.getIdAgence(), agence);
+        for (Employe e : employes) {
+            agence.addEmploye(e);
+            employeService.create(e);
+        }
+
+        agence.setEffectif(employes.size());
+
+        update(agence.getIdAgence(), agence);    }
+
     public String simuler(Agence agence, int nbjours, VehiculeOffre offre) {
         StringBuilder rapport = new StringBuilder();
-        rapport.append("Id : "+ agence.getIdAgence() + "Nom : " + agence.getNom() + "Telephone : " + agence.getTelephone() + "\n");
+        rapport.append("Id : " + agence.getIdAgence()
+                + "Nom : " + agence.getNom()
+                + "Telephone : " + agence.getTelephone() + "\n");
 
         double total = 0;
-        for(Vehicule vehicule : agence.getVehicules()){
+
+        for (Vehicule vehicule : agence.getVehicules()) {
             total += vehiculeService.calculTarif(vehicule, nbjours, offre);
         }
 

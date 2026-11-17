@@ -1,6 +1,5 @@
 package tn.esprit.autoloc.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,6 +39,18 @@ public class Agence {
     private Set<Vehicule> vehicules = new HashSet<>();
 
     @OneToMany(mappedBy = "agence", fetch = FetchType.LAZY)
-    @JsonIgnore
     private Set<Employe> employes = new HashSet<>();
+
+    public void addEmploye(Employe employe) {
+        employes.add(employe);
+        employe.setAgence(this);
+    }
+
+    public void removeEmploye(Employe employe) {
+        employes.remove(employe);
+        employe.setAgence(null);
+    }
+
+    @Column
+    private Integer effectif = 0;
 }

@@ -1,10 +1,13 @@
 package tn.esprit.autoloc.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import tn.esprit.autoloc.Utils;
 import tn.esprit.autoloc.calcul.IOffreStrategy;
 import tn.esprit.autoloc.calcul.VehiculeOffre;
 import tn.esprit.autoloc.domain.Vehicule;
+import tn.esprit.autoloc.repository.IAgenceRepository;
+import tn.esprit.autoloc.repository.IEquipementRepository;
 import tn.esprit.autoloc.repository.IVehiculeRepository;
 
 import java.util.EnumMap;
@@ -16,11 +19,16 @@ public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> impl
 
 
     private final Map<VehiculeOffre, IOffreStrategy> strategies = new EnumMap<>(VehiculeOffre.class);
-    public VehiculeServiceImpl(IVehiculeRepository repository, List<IOffreStrategy> offreStrategies) {
+    private final IAgenceRepository agenceRepository;
+    private final IEquipementRepository equipementRepository;
+
+    public VehiculeServiceImpl(IVehiculeRepository repository, List<IOffreStrategy> offreStrategies, IAgenceRepository agenceRepository, IEquipementRepository equipementRepository) {
         super(repository);
         for (IOffreStrategy strategy : offreStrategies) {
             strategies.put(strategy.getOffre(), strategy);
         }
+        this.agenceRepository = agenceRepository;
+        this.equipementRepository = equipementRepository;
     }
 
 
@@ -65,4 +73,33 @@ public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> impl
         }
         return strategy.calculer(v.getTarifJournalier().doubleValue(), nbjours);
     }
+
+    @Override
+    public Vehicule desaffecter(long id) {
+        var vehicule = findById(id);
+        vehicule.setAgence(null);
+        return repository.save(vehicule);
+    }
+
+    @Override
+    public Vehicule affecter(long id, long idAgence) {
+        var vehicule = findById(id);
+        var agence = agenceRepository.findById(idAgence);
+        vehicule.setAgence(agence.orElseThrow(() -> new IllegalArgumentException("Agence non trouvée: " + idAgence)));
+        return repository.save(vehicule);
+    }
+
+    @Override
+    @Transactional
+    public Vehicule affecterEquipement(long id, long idEquipement) {
+        var vehicule = findById(id);
+        var equipement = equipementRepository.findById(idEquipement)
+                .orElseThrow(() -> new IllegalArgumentException("Equipement non trouvé avec l'ID : " + idEquipement));
+        vehicule.getEquipements().add(equipement);
+        return repository.save(vehicule);
+    }
+
+
+
+
 }
