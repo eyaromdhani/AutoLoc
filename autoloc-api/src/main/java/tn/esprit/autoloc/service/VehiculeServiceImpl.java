@@ -24,8 +24,10 @@ public class VehiculeServiceImpl extends GenericServiceImpl<Vehicule, Long> impl
 
     public VehiculeServiceImpl(IVehiculeRepository repository, List<IOffreStrategy> offreStrategies, IAgenceRepository agenceRepository, IEquipementRepository equipementRepository) {
         super(repository);
-        for (IOffreStrategy strategy : offreStrategies) {
-            strategies.put(strategy.getOffre(), strategy);
+        if (offreStrategies != null) {
+            for (IOffreStrategy strategy : offreStrategies) {
+                strategies.put(strategy.getOffre(), strategy);
+            }
         }
         this.agenceRepository = agenceRepository;
         this.equipementRepository = equipementRepository;
