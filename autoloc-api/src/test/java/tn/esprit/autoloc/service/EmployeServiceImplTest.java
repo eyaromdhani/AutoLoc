@@ -50,7 +50,8 @@ class EmployeServiceImplTest {
         when(repository.save(e)).thenReturn(e);
         assertSame(e, service.update(1L,u));
         assertEquals("Omar", e.getPrenom()); assertSame(a,e.getAgence());
-        assertThrows(IllegalArgumentException.class, () -> service.update(1L,new Employe()));
+        Employe invalid = new Employe();
+        assertThrows(IllegalArgumentException.class, () -> service.update(1L,invalid));
     }
     @Test void deleteNominalAndError() {
         when(repository.existsById(1L)).thenReturn(true);

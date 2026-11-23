@@ -44,7 +44,8 @@ class MaintenanceServiceImplTest {
         u.setDateFin(LocalDate.now().plusDays(2)); u.setDescription("Révision"); u.setVehicule(new Vehicule());
         when(repository.findById(1L)).thenReturn(Optional.of(m)); when(repository.save(m)).thenReturn(m);
         assertSame(m,service.update(1L,u)); assertEquals("Révision",m.getDescription());
-        assertThrows(IllegalArgumentException.class,()->service.update(1L,new Maintenance()));
+        Maintenance invalid = new Maintenance();
+        assertThrows(IllegalArgumentException.class,()->service.update(1L,invalid));
     }
     @Test void deleteNominalAndError() {
         when(repository.existsById(1L)).thenReturn(true); service.deleteById(1L); verify(repository).deleteById(1L);

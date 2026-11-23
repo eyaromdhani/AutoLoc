@@ -63,7 +63,8 @@ class VehiculeServiceImplTest {
         Vehicule v=valid(); v.setIdVehicule(1L); Vehicule u=valid(); u.setMarque("Peugeot");
         when(repository.findById(1L)).thenReturn(Optional.of(v)); when(repository.save(v)).thenReturn(v);
         assertSame(v,service.update(1L,u)); assertEquals("Peugeot",v.getMarque());
-        assertThrows(IllegalArgumentException.class,()->service.update(1L,new Vehicule()));
+        Vehicule invalid = new Vehicule();
+        assertThrows(IllegalArgumentException.class,()->service.update(1L,invalid));
     }
     @Test void deleteNominalAndError() {
         when(repository.existsById(1L)).thenReturn(true); service.deleteById(1L); verify(repository).deleteById(1L);

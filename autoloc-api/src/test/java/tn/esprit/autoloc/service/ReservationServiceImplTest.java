@@ -46,7 +46,8 @@ class ReservationServiceImplTest {
         Reservation r=valid(); r.setIdReservation(1L); Reservation u=valid(); u.setStatut(StatutReservation.EN_COURS);
         when(repository.findById(1L)).thenReturn(Optional.of(r)); when(repository.save(r)).thenReturn(r);
         assertSame(r,service.update(1L,u)); assertEquals(StatutReservation.EN_COURS,r.getStatut());
-        assertThrows(IllegalArgumentException.class,()->service.update(1L,new Reservation()));
+        Reservation invalid = new Reservation();
+        assertThrows(IllegalArgumentException.class,()->service.update(1L,invalid));
     }
     @Test void deleteNominalAndError() {
         when(repository.existsById(1L)).thenReturn(true); service.deleteById(1L); verify(repository).deleteById(1L);

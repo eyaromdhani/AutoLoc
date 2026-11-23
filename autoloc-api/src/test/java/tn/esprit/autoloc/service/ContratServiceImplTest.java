@@ -57,7 +57,8 @@ class ContratServiceImplTest {
         when(repository.save(c)).thenReturn(c);
         assertSame(c, service.update(1L, u));
         assertEquals(new BigDecimal("700"), c.getMontantTotal());
-        assertThrows(IllegalArgumentException.class, () -> service.update(1L, new Contrat()));
+        Contrat invalid = new Contrat();
+        assertThrows(IllegalArgumentException.class, () -> service.update(1L, invalid));
     }
     @Test void deleteNominalAndError() {
         when(repository.existsById(1L)).thenReturn(true);

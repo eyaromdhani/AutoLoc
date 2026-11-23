@@ -44,7 +44,8 @@ class BasicAgenceServiceImplTest {
         Agence a=valid(); a.setIdAgence(1L); Agence u=valid(); u.setNom("Nouveau");
         when(repository.findById(1L)).thenReturn(Optional.of(a)); when(repository.save(a)).thenReturn(a);
         assertSame(a,service.update(1L,u)); assertEquals("Nouveau",a.getNom());
-        assertThrows(IllegalArgumentException.class,()->service.update(1L,new Agence()));
+        Agence invalid = new Agence();
+        assertThrows(IllegalArgumentException.class,()->service.update(1L,invalid));
     }
     @Test void hasVehiculesAndDelete() {
         Agence a=valid();
@@ -56,7 +57,9 @@ class BasicAgenceServiceImplTest {
         assertThrows(EntityNotFoundException.class,()->service.deleteById(99L));
     }
     @Test void updateWithEmployeesIsUnsupported() {
+        Agence agence = valid();
+        List<Employe> employes = List.of(new Employe());
         assertThrows(UnsupportedOperationException.class,
-            ()->service.updateAgenceAvecEmployes(valid(),List.of(new Employe())));
+            ()->service.updateAgenceAvecEmployes(agence,employes));
     }
 }

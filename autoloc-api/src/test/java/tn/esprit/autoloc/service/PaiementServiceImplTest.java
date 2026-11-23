@@ -38,11 +38,13 @@ class PaiementServiceImplTest {
         assertThrows(ResourceNotFoundException.class,()->service.findById(99L));
     }
     @Test void createIsUnsupported() {
-        assertThrows(UnsupportedOperationException.class,()->service.create(valid()));
+        Paiement paiement = valid();
+        assertThrows(UnsupportedOperationException.class,()->service.create(paiement));
         verifyNoInteractions(repository);
     }
     @Test void updateIsUnsupported() {
-        assertThrows(UnsupportedOperationException.class,()->service.update(1L,valid()));
+        Paiement paiement = valid();
+        assertThrows(UnsupportedOperationException.class,()->service.update(1L,paiement));
         verifyNoInteractions(repository);
     }
     @Test void deleteIsUnsupported() {

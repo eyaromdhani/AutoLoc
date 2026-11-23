@@ -4,6 +4,7 @@
 - Remove the 'ApiResponses' wrapper from this annotation group. [java:S1710]
 - Rename this generic name to match the regular expression '^[A-Z][0-9]?$'. [java:S119]
 - Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method. [java:S8688]
+- Refactor the code of the lambda to have only one invocation possibly throwing a runtime exception. [java:S5778]
 
 ## Impact moyen
 
@@ -17,5 +18,4 @@
 
 - Replace this persistent entity with a simple POJO or DTO object. [java:S4684]
 - Add at least one assertion to this test case. [java:S2699]
-
 

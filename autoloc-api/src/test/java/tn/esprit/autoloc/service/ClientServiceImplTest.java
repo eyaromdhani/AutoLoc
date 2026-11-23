@@ -58,7 +58,8 @@ class ClientServiceImplTest {
         when(repository.save(c)).thenReturn(c);
         assertSame(c, service.update(1L, updated));
         assertEquals("Nadia", c.getPrenom());
-        assertThrows(IllegalArgumentException.class, () -> service.update(1L, new Client()));
+        Client invalid = new Client();
+        assertThrows(IllegalArgumentException.class, () -> service.update(1L, invalid));
     }
     @Test void deleteNominalAndError() {
         when(repository.existsById(1L)).thenReturn(true);

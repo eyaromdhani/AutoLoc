@@ -41,7 +41,8 @@ class EquipementServiceImplTest {
         Equipement e=valid(); e.setIdEquipement(1L); Equipement u=valid(); u.setLibelle("Siège enfant");
         when(repository.findById(1L)).thenReturn(Optional.of(e)); when(repository.save(e)).thenReturn(e);
         assertSame(e,service.update(1L,u)); assertEquals("Siège enfant",e.getLibelle());
-        assertThrows(IllegalArgumentException.class,()->service.update(1L,new Equipement()));
+        Equipement invalid = new Equipement();
+        assertThrows(IllegalArgumentException.class,()->service.update(1L,invalid));
     }
     @Test void deleteNominalAndError() {
         when(repository.existsById(1L)).thenReturn(true); service.deleteById(1L); verify(repository).deleteById(1L);

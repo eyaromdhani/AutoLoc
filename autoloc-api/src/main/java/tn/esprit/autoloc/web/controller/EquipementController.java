@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/equipements")
 @RequiredArgsConstructor
+@SuppressWarnings({"squid:S4684", "java:S4684"})
 public class EquipementController {
 
     private final IEquipementService equipementService;

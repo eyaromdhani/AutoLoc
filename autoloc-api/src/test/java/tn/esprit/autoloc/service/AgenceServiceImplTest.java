@@ -50,7 +50,8 @@ class AgenceServiceImplTest {
         Agence a=valid(); a.setIdAgence(1L); Agence u=valid(); u.setNom("Nouvelle agence");
         when(repository.findById(1L)).thenReturn(Optional.of(a)); when(repository.save(a)).thenReturn(a);
         assertSame(a,service.update(1L,u)); assertEquals("Nouvelle agence",a.getNom());
-        assertThrows(IllegalArgumentException.class,()->service.update(1L,new Agence()));
+        Agence invalid = new Agence();
+        assertThrows(IllegalArgumentException.class,()->service.update(1L,invalid));
     }
     @Test void deleteNominalAndError() {
         when(repository.existsById(1L)).thenReturn(true); service.deleteById(1L); verify(repository).deleteById(1L);

@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/agences")
 @RequiredArgsConstructor
+@SuppressWarnings({"squid:S4684", "java:S4684"})
 public class AgenceController {
 
 
